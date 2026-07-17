@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite both the accompanying article and
+  this repository (use the version DOI from Zenodo when available).
+title: >-
+  slr-contaminant-screening: code, data, and interactive screening tool for
+  contaminant fate in coastal aquifers under sea level rise
+type: software
+authors:
+  - family-names: Farhat
+    given-names: Saif
+    affiliation: >-
+      Civil & Environmental Engineering & Earth Sciences,
+      University of Notre Dame
+  - family-names: Bolster
+    given-names: Diogo
+    affiliation: >-
+      Civil & Environmental Engineering & Earth Sciences,
+      University of Notre Dame
+    email: diogobolster@gmail.com
+version: 1.0.0
+date-released: "2026-07-17"
+license: MIT
+keywords:
+  - seawater intrusion
+  - sea level rise
+  - coastal aquifer
+  - contaminant transport
+  - Henry problem
+  - natural attenuation
+  - screening tool
+preferred-citation:
+  type: article
+  title: >-
+    Contaminant fate in coastal aquifers under sea level rise: analytical
+    solutions for a quasi-static saltwater wedge
+  authors:
+    - family-names: Farhat
+      given-names: Saif
+    - family-names: Bolster
+      given-names: Diogo
+  journal: Journal of Contaminant Hydrology
+  year: 2026
+  notes: in review

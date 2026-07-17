@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coastal Contaminant Trapping Screener</title>
+<style>
+  :root {
+    --surface: #fcfcfb; --page: #f9f9f7;
+    --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --blue: #2a78d6; --blue-strong: #1c5cab; --blue-100: #cde2fb;
+    --blue-250: #86b6ef; --blue-600: #184f95; --blue-700: #0d366b;
+    --aqua: #1baf7a; --red: #e34948; --red-ink: #b02a2a;
+    --good: #0ca30c; --good-text: #006300;
+    --warn: #fab219; --warn-text: #8a5a00;
+    --crit: #d03b3b; --crit-text: #b02a2a;
+    --flush-fill: rgba(42,120,214,0.07); --trap-fill: rgba(227,73,72,0.07);
+    --flush-ink: #1c5cab; --trap-ink: #b23231;
+    --chip-good: rgba(12,163,12,0.10); --chip-warn: rgba(250,178,25,0.16);
+    --chip-crit: rgba(208,59,59,0.10);
+    --sand: #efe9dc; --sand-dark: #d9cfba;
+    --fresh-1: #e8f2fd; --fresh-2: #cde2fb;
+    --salt-1: #5598e7; --salt-2: #1c5cab;
+    --sky: #eef6fe; --sea-surf: #9ec5f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #1a1a19; --page: #0d0d0d;
+      --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --blue: #3987e5; --blue-strong: #6da7ec; --blue-100: #10315c;
+      --blue-250: #2a5f9e; --blue-600: #6da7ec; --blue-700: #9ec5f4;
+      --aqua: #199e70; --red: #e66767; --red-ink: #e66767;
+      --good-text: #0ca30c; --warn-text: #fab219; --crit-text: #e66767;
+      --flush-fill: rgba(57,135,229,0.10); --trap-fill: rgba(230,103,103,0.10);
+      --flush-ink: #86b6ef; --trap-ink: #e66767;
+      --sand: #2b2620; --sand-dark: #3a332a;
+      --fresh-1: #12233a; --fresh-2: #16304f;
+      --salt-1: #2a5f9e; --salt-2: #86b6ef;
+      --sky: #101820; --sea-surf: #2a5f9e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14.5px; line-height: 1.5;
+  }
+  a { color: var(--blue); }
+  .shell { max-width: 1220px; margin: 0 auto; padding: 26px 24px 48px; }
+  header.hero { margin-bottom: 18px; }
+  .kicker {
+    font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--blue); font-weight: 700; margin-bottom: 6px;
+  }
+  header.hero h1 { font-size: 26px; margin: 0 0 6px; font-weight: 700;
+                   letter-spacing: -0.01em; }
+  header.hero p { margin: 0; color: var(--ink-2); max-width: 86ch; }
+  .layout { display: grid; grid-template-columns: 352px 1fr; gap: 18px;
+            align-items: start; margin-top: 18px; }
+  @media (max-width: 940px) { .layout { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 20px; margin-bottom: 18px;
+  }
+  .card h2 {
+    font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 12px; font-weight: 700;
+  }
+  /* inputs */
+  .sticky { position: sticky; top: 14px; }
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .presets button {
+    border: 1px solid var(--border); background: transparent;
+    color: var(--ink); border-radius: 999px; padding: 6px 13px;
+    font-size: 12.5px; cursor: pointer; font-weight: 550;
+  }
+  .presets button:hover, .presets button:focus-visible {
+    background: var(--flush-fill); border-color: var(--blue);
+    outline: none;
+  }
+  fieldset { border: 0; padding: 0; margin: 0 0 4px; }
+  legend { font-size: 12px; color: var(--muted); font-weight: 700;
+           letter-spacing: .06em; text-transform: uppercase;
+           padding: 8px 0 6px; }
+  .field { display: grid; grid-template-columns: 1fr 96px 46px; gap: 8px;
+           align-items: center; margin-bottom: 7px; }
+  .field label { color: var(--ink-2); font-size: 13.5px; }
+  .field label b { color: var(--ink); font-weight: 650; }
+  .field input {
+    width: 100%; padding: 6px 8px; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--page); color: var(--ink);
+    font-size: 13.5px; font-variant-numeric: tabular-nums;
+  }
+  .field input:focus-visible { outline: 2px solid var(--blue);
+                               outline-offset: 1px; border-color: var(--blue); }
+  .field .unit { color: var(--muted); font-size: 12px; }
+  .seg { display: flex; border: 1px solid var(--border); border-radius: 9px;
+         overflow: hidden; margin: 4px 0 10px; }
+  .seg button {
+    flex: 1; padding: 8px 4px; border: 0; background: transparent;
+    color: var(--ink-2); cursor: pointer; font-size: 12.5px; font-weight: 550;
+  }
+  .seg button.on { background: var(--blue); color: #fff; font-weight: 650; }
+  .seg button:focus-visible { outline: 2px solid var(--blue-strong);
+                              outline-offset: -3px; }
+  .hint { font-size: 12px; color: var(--muted); margin: -4px 0 10px; }
+  details { margin-top: 8px; border-top: 1px solid var(--grid);
+            padding-top: 8px; }
+  summary { cursor: pointer; color: var(--ink-2); font-size: 13px;
+            font-weight: 550; }
+  /* verdict */
+  .verdict-row { display: flex; gap: 20px; align-items: center;
+                 flex-wrap: wrap; }
+  .gauge-wrap { flex: 0 0 250px; }
+  .verdict-txt { flex: 1 1 260px; min-width: 240px; }
+  .verdict-txt .status { display: flex; align-items: center; gap: 10px;
+                         margin-bottom: 6px; }
+  .badge { display: inline-flex; align-items: center; gap: 7px;
+           padding: 5px 13px; border-radius: 999px; font-weight: 700;
+           font-size: 14px; }
+  .badge.good { background: var(--chip-good); color: var(--good-text); }
+  .badge.warn { background: var(--chip-warn); color: var(--warn-text); }
+  .badge.crit { background: var(--chip-crit); color: var(--crit-text); }
+  .verdict-txt p { margin: 4px 0 0; color: var(--ink-2); font-size: 13.5px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+           margin-top: 16px; }
+  @media (max-width: 700px) { .tiles { grid-template-columns: repeat(2,1fr);} }
+  .tile { background: var(--page); border: 1px solid var(--grid);
+          border-radius: 10px; padding: 10px 12px; }
+  .tile .k { font-size: 11.5px; color: var(--muted); font-weight: 600;
+             letter-spacing: .03em; }
+  .tile .v { font-size: 19px; font-weight: 700; margin-top: 2px;
+             font-variant-numeric: tabular-nums; }
+  .tile .s { font-size: 11.5px; color: var(--muted); }
+  .flags { margin-top: 14px; display: grid; gap: 6px; }
+  .flag { display: flex; gap: 9px; font-size: 12.5px; align-items: baseline; }
+  .flag .dot { font-size: 12px; flex: 0 0 auto; }
+  .flag.ok .dot { color: var(--good); } .flag.ok span:last-child { color: var(--muted); }
+  .flag.warn .dot { color: var(--warn-text); } .flag.warn span:last-child { color: var(--ink-2); }
+  svg { display: block; }
+  .svg-note { font-size: 11.5px; color: var(--muted); margin-top: 6px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;
+            font-size: 12.5px; color: var(--ink-2); }
+  .legend .sw { display: inline-block; width: 16px; height: 3px;
+                border-radius: 2px; vertical-align: middle; margin-right: 6px;}
+  .legend .mk { margin-right: 5px; }
+  .next ul { margin: 6px 0 0; padding-left: 20px; }
+  .next li { margin-bottom: 7px; color: var(--ink-2); }
+  .next li::marker { color: var(--blue); }
+  .next b { color: var(--ink); }
+  .explain { color: var(--ink-2); font-size: 13.5px; }
+  .explain h3 { font-size: 13.5px; color: var(--ink); margin: 14px 0 4px; }
+  .eq-block { margin: 8px 0; padding: 9px 13px; background: var(--page);
+              border: 1px solid var(--grid); border-radius: 9px;
+              font-size: 14px; overflow-x: auto;
+              font-variant-numeric: tabular-nums; }
+  .tooltip {
+    position: absolute; pointer-events: none; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px;
+    font-size: 12px; color: var(--ink);
+    box-shadow: 0 3px 14px rgba(0,0,0,.15); display: none; z-index: 5;
+    font-variant-numeric: tabular-nums;
+  }
+  footer { color: var(--muted); font-size: 12px; margin-top: 8px;
+           max-width: 100ch; }
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="hero">
+  <div class="kicker">Screening tool · sea-level rise &amp; legacy contamination</div>
+  <h1>Coastal Contaminant Trapping Screener</h1>
+  <p>Will sea-level rise trap legacy contamination against your coastline, or
+  will natural flushing keep winning? Enter standard site-characterization
+  values and this tool computes the dimensionless screening ratio
+  <b>ε/ε*</b> of Farhat &amp; Bolster (<i>J. Contam. Hydrol.</i>, in review),
+  shows your aquifer's response, and places the site on the
+  flushing–trapping regime diagram. First-pass triage — not a substitute for
+  site-specific modelling.</p>
+</header>
+
+<div class="layout">
+  <!-- ════════ INPUTS ════════ -->
+  <div class="sticky">
+  <div class="card" aria-label="Site inputs">
+    <h2>1 · Describe your site</h2>
+    <div class="presets" role="group" aria-label="Example presets">
+      <button id="pre1">Example 1 — sandy, high-K</button>
+      <button id="pre2">Example 2 — deltaic, low-K</button>
+    </div>
+
+    <label style="font-size:12px;color:var(--muted);font-weight:700;
+      letter-spacing:.06em;text-transform:uppercase;">Inland boundary behaviour</label>
+    <div class="seg" role="group" aria-label="Boundary condition">
+      <button id="bcHead" class="on" aria-pressed="true">Head-controlled</button>
+      <button id="bcFlux" aria-pressed="false">Flux-controlled</button>
+    </div>
+    <div class="hint" id="bcHint">Inland head fixed by topography, drains or
+    management — the vulnerable case. Sea rise shrinks the driving head.</div>
+
+    <fieldset>
+      <legend>Aquifer</legend>
+      <div class="field"><label for="K">Hydraulic conductivity <b>K</b></label>
+        <input id="K" type="number" step="any" value="1e-4"><span class="unit">m/s</span></div>
+      <div class="field"><label for="L">Length <b>L</b></label>
+        <input id="L" type="number" step="any" value="500"><span class="unit">m</span></div>
+      <div class="field"><label for="d">Thickness <b>d</b></label>
+        <input id="d" type="number" step="any" value="250"><span class="unit">m</span></div>
+      <div class="field"><label for="dh">Head difference <b>Δh₀</b></label>
+        <input id="dh" type="number" step="any" value="0.5"><span class="unit">m</span></div>
+      <div class="field"><label for="om">Porosity <b>ω</b></label>
+        <input id="om" type="number" step="any" value="0.3"><span class="unit">[-]</span></div>
+      <div class="field"><label for="disp">Dispersivity <b>ℓ</b></label>
+        <input id="disp" type="number" step="any" value="50"><span class="unit">m</span></div>
+    </fieldset>
+    <fieldset>
+      <legend>Forcing</legend>
+      <div class="field"><label for="slr">Sea-level-rise rate <b>ṡ</b></label>
+        <input id="slr" type="number" step="any" value="6"><span class="unit">mm/yr</span></div>
+    </fieldset>
+
+    <details>
+      <summary>Contaminant properties (optional)</summary>
+      <div class="field"><label for="R">Retardation factor <b>R</b></label>
+        <input id="R" type="number" step="any" value="1"><span class="unit">[-]</span></div>
+      <div class="field"><label for="thalf">Decay half-life <b>t½</b> (0 = none)</label>
+        <input id="thalf" type="number" step="any" value="0"><span class="unit">yr</span></div>
+    </details>
+    <details>
+      <summary>Model constants</summary>
+      <div class="field"><label for="delta">Density contrast <b>δ</b></label>
+        <input id="delta" type="number" step="any" value="0.025"><span class="unit">[-]</span></div>
+      <div class="field"><label for="a0">Reference wedge state <b>α₀</b></label>
+        <input id="a0" type="number" step="any" value="0"><span class="unit">[-]</span></div>
+    </details>
+  </div>
+  </div>
+
+  <!-- ════════ RESULTS ════════ -->
+  <div>
+    <div class="card" aria-label="Screening verdict">
+      <h2>2 · Screening verdict</h2>
+      <div class="verdict-row">
+        <div class="gauge-wrap">
+          <svg id="gauge" viewBox="0 0 250 150" role="img"
+               aria-label="Risk gauge showing the screening ratio epsilon over epsilon star"></svg>
+        </div>
+        <div class="verdict-txt">
+          <div class="status">
+            <span class="badge good" id="vBadge"><span id="vIcon">✓</span>
+              <span id="vTitle">Flushing regime</span></span>
+          </div>
+          <p id="vSub">Natural attenuation is expected to keep winning.</p>
+        </div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+      <div class="flags" id="flags"></div>
+    </div>
+
+    <div class="card" aria-label="Aquifer cross-section">
+      <h2>3 · What happens in your aquifer</h2>
+      <div style="position:relative;">
+        <svg id="xsec" viewBox="0 0 880 330" role="img"
+             aria-label="Schematic cross-section of the coastal aquifer showing the saltwater wedge today and at 2100, the freshwater flow, and the contaminant trapping zone"></svg>
+      </div>
+      <div class="legend" id="xsecLegend"></div>
+      <div class="svg-note">Schematic — vertical scale exaggerated, wedge
+      positions illustrative. The trapping zone sits at the upper seaward
+      corner (ξ ≈ 0.9–1, upper half), where wedge-deflected flow recirculates.</div>
+    </div>
+
+    <div class="card" aria-label="Regime diagram">
+      <h2>4 · Where your site sits</h2>
+      <div style="position:relative;">
+        <svg id="chart" viewBox="0 0 760 440" role="img"
+             aria-label="Log-log regime diagram of dimensionless sea-level-rise rate versus Peclet number with the critical boundary and your site marked"></svg>
+        <div class="tooltip" id="tip"></div>
+      </div>
+      <div class="legend">
+        <span><span class="sw" style="background:var(--blue)"></span>ε*(Pe) — flushing–trapping boundary (conservative)</span>
+        <span><span class="mk">★</span>your site (ε_eff)</span>
+        <span><span class="mk" style="color:#008300">■</span>Example 1</span>
+        <span><span class="mk" style="color:var(--red)">▲</span>Example 2</span>
+      </div>
+    </div>
+
+    <div class="card next" aria-label="Recommended next steps">
+      <h2>5 · What to do with this</h2>
+      <ul id="nextSteps"></ul>
+    </div>
+
+    <div class="card explain">
+      <h2>The science in four lines</h2>
+      <div class="eq-block">
+        ε = ṡ·L / (Δh₀·ū) &nbsp;·&nbsp; ε* = 2(λ₁(Pe)+Da)/[ζ(1+0.12α₀)]
+        &nbsp;·&nbsp; λ₁ = π²/Pe + Pe/4 &nbsp;·&nbsp; ε_eff = R·ε
+      </div>
+      <p><b>ε</b> measures how fast sea-level rise strengthens the saltwater
+      wedge relative to the aquifer's natural flushing speed; <b>ε*</b> is the
+      analytically derived rate above which wedge-driven trapping outruns
+      flushing. Because the wedge also boosts mean seaward throughflow
+      (μ₁ = ζPe/4 &gt; 0), aquifer-average cleanup actually <i>accelerates</i>
+      under sea-level rise while the shoreline zone deteriorates — which is
+      exactly why site-average monitoring misses the problem, and why ε* is a
+      conservative (protective) threshold.</p>
+      <h3>Trust window</h3>
+      <p>Benchmarked against full nonlinear variable-density simulations:
+      local predictions within 5% up to coupling α ≈ 1.0 and 15% up to
+      α ≈ 1.8; the flags in step 2 tell you when your inputs leave that
+      envelope. In flux-controlled systems the theory correctly predicts
+      insensitivity (ε ≈ 0), per Chang et al. (2011) and Sadhasivam et al.
+      (2025).</p>
+    </div>
+
+    <footer>
+      Implements Farhat &amp; Bolster, “Contaminant fate in coastal aquifers
+      under sea level rise” (J. Contam. Hydrol., in review) — screening-level
+      tool. Works offline; no data leaves this page. δ defaults to 0.025
+      (seawater/freshwater).
+    </footer>
+  </div>
+</div>
+</div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const YR = 365.25 * 86400;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const state = { bc: 'head' };
+
+const PRESETS = {
+  pre1: { K: 1e-4, L: 500, d: 250, dh: 0.5, om: 0.3, disp: 50, slr: 6,
+          R: 1, thalf: 0, delta: 0.025, a0: 0, bc: 'head' },
+  pre2: { K: 1e-5, L: 300, d: 150, dh: 0.1, om: 0.35, disp: 60, slr: 6,
+          R: 1, thalf: 0, delta: 0.025, a0: 0, bc: 'head' },
+};
+
+function el(t, a, parent) {
+  const e = document.createElementNS(NS, t);
+  for (const k in a) e.setAttribute(k, a[k]);
+  parent.appendChild(e); return e;
+}
+function lambda1(Pe) { return Math.PI * Math.PI / Pe + Pe / 4; }
+
+function readInputs() {
+  const v = {};
+  for (const id of ['K','L','d','dh','om','disp','slr','R','thalf','delta','a0'])
+    v[id] = parseFloat($(id).value);
+  v.bc = state.bc;
+  return v;
+}
+function compute(v) {
+  const r = {};
+  r.zeta = v.d / v.L;
+  r.ubar = v.K * v.dh / (v.om * v.L);
+  r.Tadv = v.L / r.ubar;
+  r.Pe = v.L / v.disp;
+  r.lam1 = lambda1(r.Pe);
+  r.T0 = 1 / r.lam1;
+  r.Da = v.thalf > 0 ? Math.LN2 / (v.thalf * YR) * r.Tadv : 0;
+  r.alphaPhys = v.delta * v.L / v.dh;
+  const sdot = v.slr / 1000 / YR;
+  r.epsHead = sdot * v.L / (v.dh * r.ubar);
+  r.eps = (v.bc === 'head') ? r.epsHead : 0;
+  r.epsEff = r.eps * Math.max(v.R, 1e-12);
+  r.epsStar = 2 * (r.lam1 + r.Da) / (r.zeta * (1 + 0.12 * v.a0));
+  r.ratio = r.epsEff / r.epsStar;
+  r.TflushYr = r.T0 * r.Tadv / YR * Math.max(v.R, 1e-12);
+  r.qs = r.eps * r.T0;
+  r.alphaAtT0 = v.a0 + r.eps * r.T0;
+  return r;
+}
+function fmt(x, d = 3) {
+  if (!isFinite(x)) return '—';
+  if (x === 0) return '0';
+  const a = Math.abs(x);
+  if (a >= 1e4 || a < 1e-3) {
+    const e = x.toExponential(1).split('e');
+    return e[0] + '×10' + sup(parseInt(e[1]));
+  }
+  return Number(x.toPrecision(d)).toString();
+}
+function sup(n) {
+  const m = {'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵',
+             '6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+  return String(n).split('').map(c => m[c] || c).join('');
+}
+function fmtYears(yr) {
+  if (!isFinite(yr)) return '—';
+  if (yr >= 1e4) return fmt(yr) + ' yr';
+  if (yr >= 100) return Math.round(yr) + ' yr';
+  if (yr >= 1) return yr.toPrecision(3) + ' yr';
+  return (yr * 365.25).toPrecision(3) + ' days';
+}
+
+/* ─────────── gauge ─────────── */
+function drawGauge(r, fluxMode) {
+  const svg = $('gauge'); svg.innerHTML = '';
+  const cx = 125, cy = 128, R1 = 96, R2 = 78;
+  const a0 = -Math.PI, a1 = 0;             // semicircle
+  const lo = -2, hi = 1;                    // log10(ratio) range
+  const toAng = v => a0 + (Math.min(Math.max(Math.log10(v), lo), hi) - lo)
+                        / (hi - lo) * (a1 - a0);
+  const arc = (s, e, rad1, rad2) => {
+    const p = (a, rr) => [cx + rr * Math.cos(a), cy + rr * Math.sin(a)];
+    const [x1, y1] = p(s, rad1), [x2, y2] = p(e, rad1);
+    const [x3, y3] = p(e, rad2), [x4, y4] = p(s, rad2);
+    const lg = (e - s) > Math.PI ? 1 : 0;
+    return `M${x1},${y1}A${rad1},${rad1} 0 ${lg} 1 ${x2},${y2}` +
+           `L${x3},${y3}A${rad2},${rad2} 0 ${lg} 0 ${x4},${y4}Z`;
+  };
+  // bands: flushing <0.3, marginal 0.3–1, trapping >1
+  el('path', { d: arc(toAng(0.01), toAng(0.3), R1, R2),
+               fill: css('--blue-250'), opacity: 0.55 }, svg);
+  el('path', { d: arc(toAng(0.3), toAng(1.0), R1, R2),
+               fill: css('--warn'), opacity: 0.55 }, svg);
+  el('path', { d: arc(toAng(1.0), toAng(10), R1, R2),
+               fill: css('--crit'), opacity: 0.55 }, svg);
+  // ticks + labels
+  for (const [v, lab] of [[0.01,'0.01'],[0.1,'0.1'],[0.3,'0.3'],[1,'1'],[10,'10']]) {
+    const a = toAng(v);
+    const x1 = cx + (R1 + 2) * Math.cos(a), y1 = cy + (R1 + 2) * Math.sin(a);
+    const x2 = cx + (R1 + 7) * Math.cos(a), y2 = cy + (R1 + 7) * Math.sin(a);
+    el('line', { x1, y1, x2, y2, stroke: css('--baseline'),
+                 'stroke-width': 1.2 }, svg);
+    el('text', { x: cx + (R1 + 17) * Math.cos(a),
+                 y: cy + (R1 + 17) * Math.sin(a) + 3,
+                 'text-anchor': 'middle', 'font-size': 10,
+                 fill: css('--muted') }, svg).textContent = lab;
+  }
+  // needle
+  const val = fluxMode ? 0.01 : Math.min(Math.max(r.ratio, 0.01), 10);
+  const a = toAng(val);
+  el('line', { x1: cx, y1: cy,
+               x2: cx + (R2 - 6) * Math.cos(a), y2: cy + (R2 - 6) * Math.sin(a),
+               stroke: css('--ink'), 'stroke-width': 3,
+               'stroke-linecap': 'round' }, svg);
+  el('circle', { cx, cy, r: 5.5, fill: css('--ink') }, svg);
+  // value readout (halo so the needle never obscures it)
+  const halo = { 'text-anchor': 'middle', stroke: css('--surface'),
+                 'stroke-width': 5, 'paint-order': 'stroke',
+                 'stroke-linejoin': 'round' };
+  el('text', { x: cx, y: cy - 34, 'font-size': 26, 'font-weight': 700,
+               fill: css('--ink'), ...halo }, svg)
+    .textContent = fluxMode ? '≈ 0' : fmt(r.ratio);
+  el('text', { x: cx, y: cy - 17, 'font-size': 11, fill: css('--muted'),
+               ...halo }, svg).textContent = 'ε/ε*  screening ratio';
+}
+
+/* ─────────── aquifer cross-section ─────────── */
+function drawXsec(r, v) {
+  const svg = $('xsec'); svg.innerHTML = '';
+  const AX0 = 60, AX1 = 700, AY0 = 84, AY1 = 268;   // aquifer box
+  const SEA = 860;                                     // right edge
+  const seaLvl = 46, slrLvl = 32;
+
+  // defs: gradients
+  const defs = el('defs', {}, svg);
+  const grad = (id, stops, x1=0, y1=0, x2=1, y2=0) => {
+    const g = el('linearGradient', { id, x1, y1, x2, y2 }, defs);
+    for (const [o, c, op] of stops)
+      el('stop', { offset: o, 'stop-color': c, 'stop-opacity': op ?? 1 }, g);
+  };
+  grad('gFresh', [[0, css('--fresh-1')], [1, css('--fresh-2')]]);
+  grad('gSalt', [[0, css('--salt-1')], [1, css('--salt-2')]]);
+  grad('gSea', [[0, css('--sea-surf')], [1, css('--salt-1')]], 0, 0, 0, 1);
+  const rg = el('radialGradient', { id: 'gTrap' }, defs);
+  el('stop', { offset: 0, 'stop-color': css('--red'), 'stop-opacity': 0.75 }, rg);
+  el('stop', { offset: 1, 'stop-color': css('--red'), 'stop-opacity': 0 }, rg);
+  // arrowhead
+  const mk = el('marker', { id: 'arr', viewBox: '0 0 10 10', refX: 8, refY: 5,
+    markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+  el('path', { d: 'M0,0L10,5L0,10Z', fill: css('--blue-strong') }, mk);
+
+  // sky + sea
+  el('rect', { x: 700, y: 10, width: SEA - 700, height: AY1 - 10,
+               fill: 'url(#gSea)', opacity: 0.9 }, svg);
+  // sea level lines
+  el('line', { x1: 700, y1: seaLvl, x2: SEA, y2: seaLvl,
+               stroke: css('--blue-700'), 'stroke-width': 2 }, svg);
+  el('line', { x1: 700, y1: slrLvl, x2: SEA, y2: slrLvl,
+               stroke: css('--red'), 'stroke-width': 1.6,
+               'stroke-dasharray': '5 4' }, svg);
+  el('text', { x: SEA - 6, y: seaLvl + 14, 'text-anchor': 'end',
+               'font-size': 11, fill: '#ffffff', 'font-weight': 600 }, svg)
+    .textContent = 'sea level today';
+  el('text', { x: 708, y: slrLvl - 5, 'font-size': 11,
+               fill: css('--red-ink'), 'font-weight': 700 },
+     svg).textContent = `+${v.slr} mm/yr`;
+
+  // land surface
+  el('rect', { x: 0, y: 10, width: AX0 + 640 - 0, height: AY0 - 24 - 10,
+               fill: css('--sand'), opacity: 0.5 }, svg);
+  el('text', { x: 16, y: 34, 'font-size': 12, fill: css('--ink-2'),
+               'font-weight': 700 }, svg).textContent = 'LAND';
+  el('text', { x: SEA - 8, y: 24, 'text-anchor': 'end', 'font-size': 12,
+               fill: css('--blue-700'), 'font-weight': 700 }, svg)
+    .textContent = 'SEA';
+
+  // confining layers
+  for (const y of [AY0 - 14, AY1]) {
+    el('rect', { x: 0, y, width: 700, height: 14, fill: css('--sand-dark') },
+       svg);
+    for (let x = 6; x < 696; x += 16)
+      el('line', { x1: x, y1: y + 12, x2: x + 9, y2: y + 2,
+                   stroke: css('--muted'), 'stroke-width': 1,
+                   opacity: 0.5 }, svg);
+  }
+  el('text', { x: 14, y: AY0 - 3, 'font-size': 10.5, fill: css('--muted') },
+     svg).textContent = 'confining layer';
+
+  // aquifer body (fresh)
+  el('rect', { x: 0, y: AY0, width: 700, height: AY1 - AY0,
+               fill: 'url(#gFresh)' }, svg);
+
+  // contaminant stipple (legacy plume, uniform-ish)
+  let seed = 42;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 90; i++) {
+    const x = 30 + rnd() * 640, y = AY0 + 10 + rnd() * (AY1 - AY0 - 20);
+    el('circle', { cx: x, cy: y, r: 1.6, fill: css('--warn-text'),
+                   opacity: 0.35 }, svg);
+  }
+
+  // wedge geometry: toe distance grows with alpha (log-ish, clamped)
+  const wedge = (alpha) => {
+    const ext = Math.min(90 + 95 * Math.log10(1 + Math.max(alpha, 0)), 330);
+    const toeX = 700 - ext;
+    const topY = AY0 + (AY1 - AY0) * 0.30;   // wedge tip height at sea face
+    return `M700,${AY1}L${toeX.toFixed(0)},${AY1}` +
+           `Q${(700 - ext * 0.25).toFixed(0)},${(AY1 - 8).toFixed(0)} ` +
+           `700,${topY.toFixed(0)}Z`;
+  };
+  const aNow = Math.max(r.alphaPhys, 0.4);
+  const dhFut = Math.max(v.dh - v.slr / 1000 * 75, v.dh * 0.15);
+  const aFut = (v.bc === 'flux') ? aNow : v.delta * v.L / dhFut;
+  el('path', { d: wedge(aNow), fill: 'url(#gSalt)', opacity: 0.92 }, svg);
+  const futPath = el('path', { d: wedge(aFut), fill: 'none',
+               stroke: css('--red'), 'stroke-width': 2,
+               'stroke-dasharray': '6 4' }, svg);
+  el('text', { x: 700 - 12, y: AY1 - 10, 'text-anchor': 'end',
+               'font-size': 11.5, fill: '#ffffff', 'font-weight': 700 }, svg)
+    .textContent = 'saltwater wedge';
+
+  // flow arrows (deflected upward near the wedge)
+  const flows = [[AY0 + 28, -26], [AY0 + 86, -34], [AY0 + 145, -48]];
+  for (const [y, lift] of flows) {
+    el('path', { d: `M50,${y}C280,${y} 430,${y} 560,${y + lift * 0.35}` +
+                    `S655,${y + lift} 672,${y + lift}`,
+                 fill: 'none', stroke: css('--blue-strong'),
+                 'stroke-width': 2.2, 'marker-end': 'url(#arr)',
+                 opacity: 0.85 }, svg);
+  }
+  el('text', { x: 86, y: AY0 + 20, 'font-size': 11.5,
+               fill: css('--blue-strong'), 'font-weight': 650 }, svg)
+    .textContent = 'fresh groundwater flow';
+
+  // trapping zone glow: intensity from ratio
+  const glow = (v.bc === 'flux') ? 0.12
+             : Math.min(0.25 + 0.75 * Math.min(r.ratio, 1.6) / 1.6, 1);
+  const g2 = el('g', { opacity: glow }, svg);
+  el('ellipse', { cx: 652, cy: AY0 + 34, rx: 58, ry: 34,
+                  fill: 'url(#gTrap)' }, g2);
+  const star = (cx, cy, R1s, R2s) => {
+    let d2 = '';
+    for (let i = 0; i < 10; i++) {
+      const a = -Math.PI / 2 + i * Math.PI / 5;
+      const rr = i % 2 ? R2s : R1s;
+      d2 += (i ? 'L' : 'M') + (cx + rr * Math.cos(a)).toFixed(1) + ',' +
+            (cy + rr * Math.sin(a)).toFixed(1);
+    }
+    return d2 + 'Z';
+  };
+  el('path', { d: star(652, AY0 + 34, 9, 4), fill: css('--ink'),
+               stroke: css('--surface'), 'stroke-width': 1.6 }, svg);
+  el('text', { x: 640, y: AY0 + 12, 'text-anchor': 'end', 'font-size': 11.5,
+               fill: css('--trap-ink'), 'font-weight': 700 }, svg)
+    .textContent = 'trapping zone';
+
+  // dimension annotations
+  el('text', { x: 350, y: AY1 + 34, 'text-anchor': 'middle',
+               'font-size': 11, fill: css('--muted') }, svg)
+    .textContent = `L = ${fmt(v.L)} m   ·   d = ${fmt(v.d)} m   ·   ` +
+                   `wedge dashed = ~2100 under ${v.slr} mm/yr` +
+                   (v.bc === 'flux' ? ' (flux-controlled: wedge ~static)' : '');
+
+  $('xsecLegend').innerHTML =
+    '<span><span class="sw" style="background:' + css('--salt-2') +
+    '"></span>saltwater wedge today</span>' +
+    '<span><span class="sw" style="background:' + css('--red') +
+    ';height:0;border-top:2px dashed ' + css('--red') +
+    '"></span>wedge ~2100</span>' +
+    '<span><span class="mk">★</span>contaminant trapping zone (glow = risk)</span>' +
+    '<span><span class="sw" style="background:' + css('--blue-strong') +
+    '"></span>freshwater flow, deflected upward</span>';
+}
+
+/* ─────────── regime diagram ─────────── */
+const CH = { L: 64, R: 20, T: 18, B: 46, W: 760, H: 440 };
+const PE_MIN = 0.5, PE_MAX = 300, EPS_MIN = 0.01, EPS_MAX = 500;
+const xOf = pe => CH.L + (Math.log10(pe) - Math.log10(PE_MIN)) /
+    (Math.log10(PE_MAX) - Math.log10(PE_MIN)) * (CH.W - CH.L - CH.R);
+const yOf = e => CH.H - CH.B - (Math.log10(e) - Math.log10(EPS_MIN)) /
+    (Math.log10(EPS_MAX) - Math.log10(EPS_MIN)) * (CH.H - CH.T - CH.B);
+
+function drawChart(r, v) {
+  const svg = $('chart'); svg.innerHTML = '';
+  const pts = [];
+  for (let i = 0; i <= 180; i++) {
+    const pe = Math.pow(10, Math.log10(PE_MIN) +
+        i / 180 * (Math.log10(PE_MAX) - Math.log10(PE_MIN)));
+    const es = 2 * (lambda1(pe) + r.Da) / (r.zeta * (1 + 0.12 * v.a0));
+    pts.push([xOf(pe), yOf(Math.min(Math.max(es, EPS_MIN), EPS_MAX))]);
+  }
+  const path = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' +
+                                 p[1].toFixed(1)).join('');
+  const clip = el('clipPath', { id: 'pc' }, svg);
+  el('rect', { x: CH.L, y: CH.T, width: CH.W - CH.L - CH.R,
+               height: CH.H - CH.T - CH.B }, clip);
+  el('path', { d: path + `L${CH.W - CH.R},${CH.T}L${CH.L},${CH.T}Z`,
+               fill: css('--trap-fill'), 'clip-path': 'url(#pc)' }, svg);
+  el('path', { d: path + `L${CH.W - CH.R},${CH.H - CH.B}L${CH.L},${CH.H - CH.B}Z`,
+               fill: css('--flush-fill'), 'clip-path': 'url(#pc)' }, svg);
+  [1, 10, 100].forEach(vv => {
+    const x = xOf(vv);
+    el('line', { x1: x, y1: CH.T, x2: x, y2: CH.H - CH.B,
+                 stroke: css('--grid'), 'stroke-width': 1 }, svg);
+    el('text', { x, y: CH.H - CH.B + 19, 'text-anchor': 'middle',
+                 fill: css('--muted'), 'font-size': 11.5 }, svg)
+      .textContent = vv;
+  });
+  [0.01, 0.1, 1, 10, 100].forEach(vv => {
+    const y = yOf(vv);
+    el('line', { x1: CH.L, y1: y, x2: CH.W - CH.R, y2: y,
+                 stroke: css('--grid'), 'stroke-width': 1 }, svg);
+    el('text', { x: CH.L - 8, y: y + 4, 'text-anchor': 'end',
+                 fill: css('--muted'), 'font-size': 11.5 }, svg)
+      .textContent = vv;
+  });
+  el('line', { x1: CH.L, y1: CH.H - CH.B, x2: CH.W - CH.R, y2: CH.H - CH.B,
+               stroke: css('--baseline'), 'stroke-width': 1.2 }, svg);
+  el('line', { x1: CH.L, y1: CH.T, x2: CH.L, y2: CH.H - CH.B,
+               stroke: css('--baseline'), 'stroke-width': 1.2 }, svg);
+  el('text', { x: (CH.L + CH.W - CH.R) / 2, y: CH.H - 8,
+               'text-anchor': 'middle', fill: css('--ink-2'),
+               'font-size': 12.5 }, svg)
+    .textContent = 'Péclet number Pe = L/ℓ  [-]';
+  const yl = el('text', { x: 16, y: (CH.T + CH.H - CH.B) / 2,
+               'text-anchor': 'middle', fill: css('--ink-2'),
+               'font-size': 12.5,
+               transform: `rotate(-90 16 ${(CH.T + CH.H - CH.B) / 2})` }, svg);
+  yl.textContent = 'Dimensionless SLR rate ε  [-]';
+  el('text', { x: xOf(60), y: yOf(0.08), fill: css('--flush-ink'),
+               'font-size': 14, 'font-style': 'italic', 'font-weight': 700,
+               'text-anchor': 'middle', opacity: 0.9 }, svg)
+    .textContent = 'FLUSHING';
+  el('text', { x: xOf(1.6), y: yOf(120), fill: css('--trap-ink'),
+               'font-size': 14, 'font-style': 'italic', 'font-weight': 700,
+               'text-anchor': 'middle', opacity: 0.9 }, svg)
+    .textContent = 'TRAPPING';
+  el('path', { d: path, fill: 'none', stroke: css('--blue'),
+               'stroke-width': 2.4, 'clip-path': 'url(#pc)' }, svg);
+  const peM = 2 * Math.PI;
+  const esM = 2 * (lambda1(peM) + r.Da) / (r.zeta * (1 + 0.12 * v.a0));
+  if (esM > EPS_MIN && esM < EPS_MAX) {
+    el('circle', { cx: xOf(peM), cy: yOf(esM), r: 4.5,
+                   fill: css('--blue-strong') }, svg);
+    el('text', { x: xOf(peM) + 9, y: yOf(esM) + 15, fill: css('--ink-2'),
+                 'font-size': 11 }, svg)
+      .textContent = 'Pe* = 2π — most vulnerable';
+  }
+  // example markers
+  const exs = [
+    { p: PRESETS.pre1, sym: 'rect', color: '#008300', name: 'Ex. 1' },
+    { p: PRESETS.pre2, sym: 'tri', color: css('--red'), name: 'Ex. 2' },
+  ];
+  for (const ex of exs) {
+    const rr = compute({ ...ex.p });
+    const x = xOf(Math.min(Math.max(rr.Pe, PE_MIN), PE_MAX));
+    const y = yOf(Math.min(Math.max(rr.epsEff, EPS_MIN), EPS_MAX));
+    if (ex.sym === 'rect')
+      el('rect', { x: x - 5.5, y: y - 5.5, width: 11, height: 11,
+                   fill: ex.color, stroke: css('--surface'),
+                   'stroke-width': 2 }, svg);
+    else
+      el('path', { d: `M${x},${y - 7}L${x + 7},${y + 5.5}L${x - 7},${y + 5.5}Z`,
+                   fill: ex.color, stroke: css('--surface'),
+                   'stroke-width': 2 }, svg);
+    el('text', { x: x + 10, y: y + 4, fill: css('--ink-2'),
+                 'font-size': 11 }, svg).textContent = ex.name;
+  }
+  // site marker
+  if (v.bc !== 'flux') {
+    const sx = xOf(Math.min(Math.max(r.Pe, PE_MIN), PE_MAX));
+    const sy = yOf(Math.min(Math.max(r.epsEff, EPS_MIN), EPS_MAX));
+    const star = (cx, cy, R1s, R2s) => {
+      let d = '';
+      for (let i = 0; i < 10; i++) {
+        const a = -Math.PI / 2 + i * Math.PI / 5;
+        const rr = i % 2 ? R2s : R1s;
+        d += (i ? 'L' : 'M') + (cx + rr * Math.cos(a)).toFixed(1) + ',' +
+             (cy + rr * Math.sin(a)).toFixed(1);
+      }
+      return d + 'Z';
+    };
+    el('circle', { cx: sx, cy: sy, r: 14, fill: css('--blue'),
+                   opacity: 0.18 }, svg);
+    el('path', { d: star(sx, sy, 11, 4.6), fill: css('--ink'),
+                 stroke: css('--surface'), 'stroke-width': 2 }, svg);
+    el('text', { x: sx + 14, y: sy - 10, fill: css('--ink'),
+                 'font-size': 12.5, 'font-weight': 700 }, svg)
+      .textContent = 'your site';
+    if (r.epsEff > EPS_MAX || r.epsEff < EPS_MIN || r.Pe > PE_MAX || r.Pe < PE_MIN)
+      el('text', { x: sx + 14, y: sy + 6, fill: css('--muted'),
+                   'font-size': 10.5 }, svg).textContent = '(off-scale, clamped)';
+  } else {
+    el('text', { x: CH.L + 12, y: CH.H - CH.B - 12, fill: css('--muted'),
+                 'font-size': 12.5 }, svg)
+      .textContent = 'Flux-controlled: ε ≈ 0 — your site plots below the diagram.';
+  }
+  // hover
+  const tip = $('tip');
+  const ov = el('rect', { x: CH.L, y: CH.T, width: CH.W - CH.L - CH.R,
+                          height: CH.H - CH.T - CH.B, fill: 'transparent' },
+                svg);
+  ov.addEventListener('mousemove', ev => {
+    const box = svg.getBoundingClientRect();
+    const mx = (ev.clientX - box.left) * CH.W / box.width;
+    const my = (ev.clientY - box.top) * CH.H / box.height;
+    const pe = Math.pow(10, Math.log10(PE_MIN) + (mx - CH.L) /
+        (CH.W - CH.L - CH.R) * (Math.log10(PE_MAX) - Math.log10(PE_MIN)));
+    const ee = Math.pow(10, Math.log10(EPS_MIN) + (CH.H - CH.B - my) /
+        (CH.H - CH.T - CH.B) * (Math.log10(EPS_MAX) - Math.log10(EPS_MIN)));
+    const es = 2 * (lambda1(pe) + r.Da) / (r.zeta * (1 + 0.12 * v.a0));
+    tip.style.display = 'block';
+    tip.style.left = (ev.clientX - box.left + 14) + 'px';
+    tip.style.top = (ev.clientY - box.top - 10) + 'px';
+    tip.innerHTML = 'Pe <b>' + fmt(pe) + '</b> · ε <b>' + fmt(ee) +
+        '</b><br>ε* here: <b>' + fmt(es) + '</b> → ' +
+        (ee > es ? 'trapping side' : 'flushing side');
+  });
+  ov.addEventListener('mouseleave', () => tip.style.display = 'none');
+}
+
+/* ─────────── main update ─────────── */
+function update() {
+  const v = readInputs();
+  if ([v.K, v.L, v.d, v.dh, v.om, v.disp].some(x => !(x > 0))) return;
+  const r = compute(v);
+  const flux = v.bc === 'flux';
+
+  // verdict
+  const badge = $('vBadge');
+  badge.classList.remove('good', 'warn', 'crit');
+  let cls, icon, title, sub, steps;
+  if (flux) {
+    cls = 'good'; icon = '✓'; title = 'SLR-insensitive (flux-controlled)';
+    sub = 'With recharge-fixed inland flux, the water table rises with the ' +
+      'sea and the driving gradient is maintained — the wedge, and trapping, ' +
+      'respond only weakly (Chang et al., 2011). The main hazard becomes ' +
+      'rising groundwater and inundation, not intrusion.';
+    steps = [
+      '<b>Verify the boundary behaviour.</b> Drains, ditches, topography-limited water tables or managed heads make a system effectively head-controlled — flip the toggle to see that case.',
+      '<b>Watch groundwater levels, not just salinity.</b> In flux-controlled systems SLR shows up first as shallower water tables and drainage problems.',
+      '<b>Re-screen if pumping changes.</b> New extraction can convert the system toward head-controlled behaviour.'];
+  } else if (r.ratio < 0.3) {
+    cls = 'good'; icon = '✓'; title = 'Flushing regime';
+    sub = 'ε sits well below the critical rate ε*: natural attenuation should ' +
+      'continue under sea-level rise, and aquifer-average cleanup even ' +
+      'accelerates slightly. Expect the persistent zone to shift toward the ' +
+      'shoreline as the wedge advances.';
+    steps = [
+      '<b>Keep one sentinel well in the trapping zone</b> (upper seaward corner, ξ ≈ 0.9–1) — it is the only place the SLR signal is visible.',
+      '<b>Don’t judge the site from averages or inland wells alone;</b> they will look fine (or better) under SLR by construction.',
+      '<b>Re-screen when parameters change</b> — new SLR projections, revised K or Δh₀, or a sorbing contaminant (R > 1) can move the verdict.'];
+  } else if (r.ratio < 1) {
+    cls = 'warn'; icon = '⚠'; title = 'Marginal — elevated trapping potential';
+    sub = 'ε is within a factor ~3 of ε*: shoreline concentrations may ' +
+      'persist or rebound while site averages keep declining. The screening ' +
+      'threshold is conservative, but this is the zone where it starts to matter.';
+    steps = [
+      '<b>Prioritize seaward monitoring now:</b> nested wells in the upper seaward zone, sampled at least seasonally.',
+      '<b>Watch for the trapping signature:</b> flat or rising concentrations at the shoreline while inland wells decline.',
+      '<b>Budget for a variable-density model</b> (SEAWAT/SUTRA-class) — this site is close enough to the boundary that screening alone should not carry the decision.'];
+  } else {
+    cls = 'crit'; icon = '✕'; title = 'Trapping risk — investigate';
+    sub = 'ε exceeds ε*: within this framework, SLR-driven accumulation ' +
+      'outruns flushing at the coast. Because ε* is a conservative bound, ' +
+      'treat this as a firm flag, not a prediction — and note the validity ' +
+      'flags below.';
+    steps = [
+      '<b>Commission full variable-density transport modelling</b> for this site; the screening framework has done its job by flagging it.',
+      '<b>Establish shoreline monitoring immediately</b> — the trapping zone (upper seaward corner) is where degradation will appear first.',
+      '<b>Screen the contaminant inventory by retardation:</b> sorbing compounds (R > 1) trap hardest; degradable ones (finite half-life) are safer than this conservative verdict suggests.'];
+  }
+  badge.classList.add(cls);
+  $('vIcon').textContent = icon;
+  $('vTitle').textContent = title;
+  $('vSub').textContent = sub;
+  $('nextSteps').innerHTML = steps.map(s => '<li>' + s + '</li>').join('');
+
+  // tiles
+  $('tiles').innerHTML = [
+    ['Péclet number Pe', fmt(r.Pe), 'L/ℓ  [-]'],
+    ['SLR rate ε' + (v.R > 1 ? '·R' : ''), flux ? '≈ 0' : fmt(r.epsEff),
+     flux ? 'head-controlled value: ' + fmt(r.epsHead) : 'dimensionless  [-]'],
+    ['Critical rate ε*', fmt(r.epsStar),
+     r.Da > 0 ? 'incl. decay Da = ' + fmt(r.Da) : 'conservative bound  [-]'],
+    ['Flushing time', fmtYears(r.TflushYr),
+     'T₀ · L/ū' + (v.R > 1 ? ' · R' : '')],
+  ].map(([k, val, s]) =>
+    `<div class="tile"><div class="k">${k}</div><div class="v">${val}</div>` +
+    `<div class="s">${s}</div></div>`).join('');
+
+  // flags
+  const flags = [];
+  const okf = (ok, warnTxt, okTxt) =>
+    flags.push({ cls: ok ? 'ok' : 'warn', txt: ok ? okTxt : warnTxt });
+  okf(r.qs <= 0.5,
+    `Quasi-static assumption strained: α changes by ${fmt(r.qs)} per flushing time (want ≲ 0.5) — read the verdict as a trend, and see a numerical model.`,
+    `Quasi-static assumption OK (ε·T₀ = ${fmt(r.qs)} ≤ 0.5).`);
+  okf(r.alphaAtT0 <= 1.0,
+    r.alphaAtT0 <= 1.8
+      ? `Between measured accuracy ceilings: α(T₀) = ${fmt(r.alphaAtT0)} — local predictions good to ~15% (5% requires α ≤ 1.0).`
+      : `Beyond the measured 15% ceiling: α(T₀) = ${fmt(r.alphaAtT0)} > 1.8 — first-order theory is a trend indicator here.`,
+    `Within the measured 5% accuracy envelope (α(T₀) = ${fmt(r.alphaAtT0)} ≤ 1.0, benchmarked vs nonlinear simulation).`);
+  okf(r.Pe >= 1 && r.Pe <= 200,
+    `Pe = ${fmt(r.Pe)} lies outside the explored range (1–200).`,
+    `Pe within the explored range (1–200).`);
+  if (r.alphaPhys > 1.8 && v.a0 === 0)
+    flags.push({ cls: 'warn', txt:
+      `Note: the full physical coupling δL/Δh₀ = ${fmt(r.alphaPhys)} is large; the screening treats SLR as an increment about today's wedge (α₀ = 0 reference), as in the paper.` });
+  $('flags').innerHTML = flags.map(f =>
+    `<div class="flag ${f.cls}"><span class="dot">${f.cls === 'ok' ? '●' : '▲'}</span><span>${f.txt}</span></div>`).join('');
+
+  drawGauge(r, flux);
+  drawXsec(r, v);
+  drawChart(r, v);
+}
+
+/* wiring */
+for (const id of ['K','L','d','dh','om','disp','slr','R','thalf','delta','a0'])
+  $(id).addEventListener('input', update);
+function setBC(bc) {
+  state.bc = bc;
+  $('bcHead').classList.toggle('on', bc === 'head');
+  $('bcFlux').classList.toggle('on', bc === 'flux');
+  $('bcHead').setAttribute('aria-pressed', bc === 'head');
+  $('bcFlux').setAttribute('aria-pressed', bc === 'flux');
+  $('bcHint').textContent = bc === 'head'
+    ? 'Inland head fixed by topography, drains or management — the vulnerable case. Sea rise shrinks the driving head.'
+    : 'Inland flux fixed by recharge — the water table floats up with the sea; the wedge barely moves (Chang et al., 2011).';
+  update();
+}
+$('bcHead').addEventListener('click', () => setBC('head'));
+$('bcFlux').addEventListener('click', () => setBC('flux'));
+for (const pid of ['pre1', 'pre2'])
+  $(pid).addEventListener('click', () => {
+    const p = PRESETS[pid];
+    for (const k in p) if (k !== 'bc') { const f = $(k); if (f) f.value = p[k]; }
+    setBC(p.bc);
+  });
+window.matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener('change', update);
+update();
+</script>
+</body>
+</html>
