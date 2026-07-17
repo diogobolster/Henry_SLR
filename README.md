@@ -20,10 +20,9 @@ against full nonlinear variable-density simulations of the transient Henry
 problem. This repository contains everything needed to reproduce those
 results, plus an interactive screening calculator.
 
-## 🔎 The interactive screening tool
+## 🔎 The SLR Screening Tool
 
-**Try it here → [GitHub Pages link — enable Pages on `main`/`docs`, then
-this is `https://<user>.github.io/<repo>/`](docs/index.html)**
+**Try it here → <https://diogobolster.github.io/Henry_SLR/>**
 
 <img src="docs/screenshot.png" width="720" alt="Screenshot of the coastal contaminant trapping screener">
 
@@ -32,7 +31,8 @@ SLR rate); the tool computes the screening ratio ε/ε\*, applies the
 measured validity checks automatically, draws your aquifer's wedge and
 trapping zone, and places the site on the flushing–trapping regime diagram.
 Single self-contained HTML file (`docs/index.html`) — no installation, no
-network, no data leaves the page.
+network, no data leaves the page. (You can also simply download
+`docs/index.html` and open it locally.)
 
 ## Repository contents
 
