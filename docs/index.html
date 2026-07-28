@@ -281,7 +281,7 @@
         <div class="tooltip" id="tip"></div>
       </div>
       <div class="legend">
-        <span><span class="sw" style="background:var(--blue)"></span>ε*(Pe) — flushing–trapping boundary (conservative)</span>
+        <span><span class="sw" style="background:var(--blue)"></span>ε*(Pe) — screening threshold (first-order estimate)</span>
         <span><span class="mk">★</span>your site (ε_eff)</span>
         <span><span class="mk" style="color:#008300">■</span>Example 1</span>
         <span><span class="mk" style="color:var(--red)">▲</span>Example 2</span>
@@ -795,7 +795,8 @@ function update() {
     cls = 'warn'; icon = '⚠'; title = 'Marginal — elevated trapping potential';
     sub = 'ε is within a factor ~3 of ε*: shoreline concentrations may ' +
       'persist or rebound while site averages keep declining. The screening ' +
-      'threshold is conservative, but this is the zone where it starts to matter.';
+      'threshold is a first-order estimate, and this is the zone where its ' +
+      'uncertainty matters most.';
     steps = [
       '<b>Prioritize seaward monitoring now:</b> nested wells in the upper seaward zone, sampled at least seasonally.',
       '<b>Watch for the trapping signature:</b> flat or rising concentrations at the shoreline while inland wells decline.',
@@ -803,13 +804,13 @@ function update() {
   } else {
     cls = 'crit'; icon = '✕'; title = 'Trapping risk — investigate';
     sub = 'ε exceeds ε*: within this framework, SLR-driven accumulation ' +
-      'outruns flushing at the coast. Because ε* is a conservative bound, ' +
-      'treat this as a firm flag, not a prediction — and note the validity ' +
-      'flags below.';
+      'outruns flushing at the coast. ε* is a first-order screening estimate, ' +
+      'not a validated stability boundary — treat this as a flag for ' +
+      'detailed modelling, not a prediction, and note the validity flags below.';
     steps = [
       '<b>Commission full variable-density transport modelling</b> for this site; the screening framework has done its job by flagging it.',
       '<b>Establish shoreline monitoring immediately</b> — the trapping zone (upper seaward corner) is where degradation will appear first.',
-      '<b>Screen the contaminant inventory by retardation:</b> sorbing compounds (R > 1) trap hardest; degradable ones (finite half-life) are safer than this conservative verdict suggests.'];
+      '<b>Screen the contaminant inventory by retardation:</b> sorbing compounds (R > 1) trap hardest; degradable ones (finite half-life) are safer than this conservative-tracer verdict suggests.'];
   }
   badge.classList.add(cls);
   $('vIcon').textContent = icon;
