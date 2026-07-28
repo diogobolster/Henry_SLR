@@ -283,7 +283,7 @@ ax.plot(10.0, 0.57, 's', color='#1a9641', ms=10, zorder=6,
         label='Ex. 1 (high-$K$, flushing)')
 ax.plot(5.0, 60.0, '^', color='#d73027', ms=10, zorder=6,
         label='Ex. 2 (low-$K$, trapping)')
-ax.set_xlabel(r'P\'eclet number $\mathrm{Pe}$ [-]')
+ax.set_xlabel('Péclet number $\\mathrm{Pe}$ [-]')
 ax.set_ylabel(r'Dimensionless SLR rate $\varepsilon$ [-]')
 ax.set_xlim(Pe_arr[0], Pe_arr[-1]); ax.set_ylim(0.01, 500)
 ax.legend(loc='upper left', framealpha=0.92, fontsize=9)

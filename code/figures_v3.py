@@ -86,7 +86,7 @@ for a0, col, ls in zip([0.0, 1.0, 1.8], ['#2166ac', '#f4a582', '#d6604d'],
 e0 = np.array([eps_star(p, 0.0) for p in Pe_arr])
 ax.fill_between(Pe_arr, 1e-4, e0, alpha=0.10, color='#2166ac')
 ax.fill_between(Pe_arr, e0, 1e3, alpha=0.10, color='#d6604d')
-ax.text(0.70, 0.16, 'FLUSHING-DOMINATED', transform=ax.transAxes, fontsize=11.5,
+ax.text(0.27, 0.06, 'FLUSHING-DOMINATED', transform=ax.transAxes, fontsize=11.5,
         color='#2166ac', alpha=0.85, ha='center', style='italic',
         fontweight='bold')
 ax.text(0.24, 0.83, 'TRAPPING CONCERN', transform=ax.transAxes, fontsize=11.5,
@@ -102,7 +102,7 @@ ax.plot(10.0, 9.1e-4, 's', color='#1a9641', ms=10, zorder=6,
         label='Ex. 1 (flushing)')
 ax.plot(5.0, 3.6, '^', color='#d73027', ms=10, zorder=6,
         label='Ex. 2 (elevated)')
-ax.set_xlabel(r"P\'eclet number $\mathrm{Pe}$ [-]")
+ax.set_xlabel('Péclet number $\\mathrm{Pe}$ [-]')
 ax.set_ylabel(r'Absolute SLR coupling rate $\varepsilon=\alpha_0\varepsilon_f$ [-]')
 ax.set_xlim(Pe_arr[0], Pe_arr[-1]); ax.set_ylim(1e-4, 1e3)
 ax.legend(loc='lower right', framealpha=0.92, fontsize=9)
