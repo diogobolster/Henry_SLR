@@ -13,11 +13,14 @@
 Sea level rise pushes the saltwater wedge in head-controlled coastal
 aquifers inland, restructuring the flow field that governs legacy
 contamination. The paper derives first-order analytical results for what
-happens next — local trapping at the upper seaward corner, a mildly
-*accelerated* domain-averaged flushing rate (μ₁ = ζPe/4), and a
-conservative screening threshold ε\*(Pe, ζ) — and validates all of them
-against full nonlinear variable-density simulations of the transient Henry
-problem. This repository contains everything needed to reproduce those
+happens next — local trapping at the upper seaward corner; an exact
+first-order cancellation (built on the operator result μ₁ = ζPe/4) showing
+that the buoyancy contribution to aquifer-scale flushing is independent of
+the driving head, so SLR slows global flushing at the pace of head loss
+while intensifying coastal trapping; and a screening threshold
+ε\*(Pe, ζ, α₀) — and benchmarks them against nonlinear variable-density
+Henry solutions (steady wedge states coupled to transient contaminant
+transport under quasi-static forcing). This repository contains everything needed to reproduce those
 results, plus an interactive screening calculator.
 
 ## 🔎 The SLR Screening Tool
@@ -76,6 +79,8 @@ make all          # or run the steps individually:
 |---|---|---|---|
 | Flow benchmark | `python bench1_velocity.py` | ~1 min | `results/bench1.npz` |
 | Transport benchmark | `python bench3_final.py` | ~4 min | `results/bench3.npz` |
+| Sensitivity + Monte Carlo | `python bench4_review.py` | ~1 min | `results/bench4.npz` |
+| Cluster/MC/regime figures | `python figures_v3.py` | seconds | Figs. 6, 7, 11 |
 | Validation figures | `python make_val_figs.py` | seconds | Figs. 6–7 |
 | Manuscript figures | `python figures_corrected.py` | ~3 min | Figs. 2, 3, 5, 8, regime, validity |
 
@@ -95,7 +100,11 @@ The benchmark verifies (paper Section 4):
 - trapping zone at (ξ, η) ≈ (0.93, 0.50), matching the analytical
   (0.94, 0.50);
 - measured first-order accuracy: local error 5% at α ≈ 1.0, 15% at
-  α ≈ 1.8; global error < 10% through α = 2.5.
+  α ≈ 1.8; global error < 10% through α = 2.5;
+- zone-wide trapping response: +24% to +62% local retardation at τ = T₀
+  across a five-point monitoring cluster (ε = 3);
+- Monte Carlo screening-ratio distributions for the two worked examples
+  under plausible input uncertainty.
 
 ## Citing
 

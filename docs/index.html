@@ -206,15 +206,15 @@
       <div class="field"><label for="K">Hydraulic conductivity <b>K</b></label>
         <input id="K" type="number" step="any" value="1e-4"><span class="unit">m/s</span></div>
       <div class="field"><label for="L">Length <b>L</b></label>
-        <input id="L" type="number" step="any" value="500"><span class="unit">m</span></div>
+        <input id="L" type="number" step="any" value="200"><span class="unit">m</span></div>
       <div class="field"><label for="d">Thickness <b>d</b></label>
-        <input id="d" type="number" step="any" value="250"><span class="unit">m</span></div>
+        <input id="d" type="number" step="any" value="100"><span class="unit">m</span></div>
       <div class="field"><label for="dh">Head difference <b>Δh₀</b></label>
-        <input id="dh" type="number" step="any" value="0.5"><span class="unit">m</span></div>
+        <input id="dh" type="number" step="any" value="5"><span class="unit">m</span></div>
       <div class="field"><label for="om">Porosity <b>ω</b></label>
         <input id="om" type="number" step="any" value="0.3"><span class="unit">[-]</span></div>
       <div class="field"><label for="disp">Dispersivity <b>ℓ</b></label>
-        <input id="disp" type="number" step="any" value="50"><span class="unit">m</span></div>
+        <input id="disp" type="number" step="any" value="20"><span class="unit">m</span></div>
     </fieldset>
     <fieldset>
       <legend>Forcing</legend>
@@ -233,8 +233,9 @@
       <summary>Model constants</summary>
       <div class="field"><label for="delta">Density contrast <b>δ</b></label>
         <input id="delta" type="number" step="any" value="0.025"><span class="unit">[-]</span></div>
-      <div class="field"><label for="a0">Reference wedge state <b>α₀</b></label>
-        <input id="a0" type="number" step="any" value="0"><span class="unit">[-]</span></div>
+      <div class="hint" style="margin-top:6px;">The wedge state α₀ = δL/Δh₀
+      is computed from your inputs — the theory is quantitative for
+      α₀ ≤ ~1.8 (steep-gradient / short systems).</div>
     </details>
   </div>
   </div>
@@ -295,24 +296,33 @@
     <div class="card explain">
       <h2>The science in four lines</h2>
       <div class="eq-block">
-        ε = ṡ·L / (Δh₀·ū) &nbsp;·&nbsp; ε* = 2(λ₁(Pe)+Da)/[ζ(1+0.12α₀)]
+        ε_f = ṡ·L/(Δh₀·ū₀) &nbsp;·&nbsp; ε = α₀·ε_f, α₀ = δL/Δh₀
+        &nbsp;·&nbsp; ε* = 2(λ₁(Pe)+Da+α₀ζPe/4)/ζ
         &nbsp;·&nbsp; λ₁ = π²/Pe + Pe/4 &nbsp;·&nbsp; ε_eff = R·ε
       </div>
-      <p><b>ε</b> measures how fast sea-level rise strengthens the saltwater
-      wedge relative to the aquifer's natural flushing speed; <b>ε*</b> is the
-      analytically derived rate above which wedge-driven trapping outruns
-      flushing. Because the wedge also boosts mean seaward throughflow
-      (μ₁ = ζPe/4 &gt; 0), aquifer-average cleanup actually <i>accelerates</i>
-      under sea-level rise while the shoreline zone deteriorates — which is
-      exactly why site-average monitoring misses the problem, and why ε* is a
-      conservative (protective) threshold.</p>
+      <p><b>ε</b> is the absolute rate at which sea-level rise strengthens
+      the saltwater coupling, relative to the aquifer's flushing speed —
+      note it carries the wedge state α₀, since a rising sea can only grow
+      the coupling in proportion to its existing value. <b>ε*</b> is the
+      screening rate above which wedge-driven restructuring outruns
+      flushing. Under head-controlled SLR the buoyancy contribution to the
+      flushing rate is independent of the head (an exact first-order
+      cancellation built on μ₁ = ζPe/4), so aquifer-average cleanup
+      <i>slows at the pace of head loss</i> while the shoreline zone
+      deteriorates faster — which is why site-average monitoring misses
+      the problem.</p>
       <h3>Trust window</h3>
-      <p>Benchmarked against full nonlinear variable-density simulations:
-      local predictions within 5% up to coupling α ≈ 1.0 and 15% up to
-      α ≈ 1.8; the flags in step 2 tell you when your inputs leave that
-      envelope. In flux-controlled systems the theory correctly predicts
-      insensitivity (ε ≈ 0), per Chang et al. (2011) and Sadhasivam et al.
-      (2025).</p>
+      <p>Benchmarked against nonlinear variable-density Henry solutions
+      (steady wedge states with transient contaminant transport): local
+      predictions within 5% up to total coupling α ≈ 1.0 and 15% up to
+      α ≈ 1.8. The expansion is taken about α = 0, so quantitative use
+      requires α₀ = δL/Δh₀ within those same ceilings (steep-gradient or
+      short systems) — the flags in step 2 tell you when your inputs leave
+      the envelope. The threshold location itself is a first-order
+      extrapolative estimate, with ~20% additional uncertainty from the
+      seaward outflow boundary condition. In flux-controlled systems the
+      theory predicts insensitivity (ε ≈ 0), per Chang et al. (2011) and
+      Sadhasivam et al. (2025).</p>
     </div>
 
     <footer>
@@ -334,10 +344,10 @@ const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).
 const state = { bc: 'head' };
 
 const PRESETS = {
-  pre1: { K: 1e-4, L: 500, d: 250, dh: 0.5, om: 0.3, disp: 50, slr: 6,
-          R: 1, thalf: 0, delta: 0.025, a0: 0, bc: 'head' },
-  pre2: { K: 1e-5, L: 300, d: 150, dh: 0.1, om: 0.35, disp: 60, slr: 6,
-          R: 1, thalf: 0, delta: 0.025, a0: 0, bc: 'head' },
+  pre1: { K: 1e-4, L: 200, d: 100, dh: 5, om: 0.3, disp: 20, slr: 6,
+          R: 1, thalf: 0, delta: 0.025, bc: 'head' },
+  pre2: { K: 1e-7, L: 300, d: 150, dh: 5, om: 0.35, disp: 60, slr: 6,
+          R: 1, thalf: 0, delta: 0.025, bc: 'head' },
 };
 
 function el(t, a, parent) {
@@ -349,7 +359,7 @@ function lambda1(Pe) { return Math.PI * Math.PI / Pe + Pe / 4; }
 
 function readInputs() {
   const v = {};
-  for (const id of ['K','L','d','dh','om','disp','slr','R','thalf','delta','a0'])
+  for (const id of ['K','L','d','dh','om','disp','slr','R','thalf','delta'])
     v[id] = parseFloat($(id).value);
   v.bc = state.bc;
   return v;
@@ -363,16 +373,19 @@ function compute(v) {
   r.lam1 = lambda1(r.Pe);
   r.T0 = 1 / r.lam1;
   r.Da = v.thalf > 0 ? Math.LN2 / (v.thalf * YR) * r.Tadv : 0;
-  r.alphaPhys = v.delta * v.L / v.dh;
+  r.alpha0 = v.delta * v.L / v.dh;          // base-state coupling
+  r.alphaPhys = r.alpha0;
   const sdot = v.slr / 1000 / YR;
-  r.epsHead = sdot * v.L / (v.dh * r.ubar);
+  r.epsF = sdot * v.L / (v.dh * r.ubar);    // fractional rate
+  r.epsHead = r.alpha0 * r.epsF;            // absolute rate eps = a0*epsF
   r.eps = (v.bc === 'head') ? r.epsHead : 0;
   r.epsEff = r.eps * Math.max(v.R, 1e-12);
-  r.epsStar = 2 * (r.lam1 + r.Da) / (r.zeta * (1 + 0.12 * v.a0));
+  // analytic base-state dependence (paper Eq. 20) + decay
+  r.epsStar = 2 * (r.lam1 + r.Da + r.alpha0 * r.zeta * r.Pe / 4) / r.zeta;
   r.ratio = r.epsEff / r.epsStar;
   r.TflushYr = r.T0 * r.Tadv / YR * Math.max(v.R, 1e-12);
-  r.qs = r.eps * r.T0;
-  r.alphaAtT0 = v.a0 + r.eps * r.T0;
+  r.qs = (v.bc === 'head') ? r.epsF * r.T0 : 0;   // quasi-static: eps_f*T0
+  r.alphaAtT0 = r.alpha0 + r.eps * r.T0;
   return r;
 }
 function fmt(x, d = 3) {
@@ -403,7 +416,7 @@ function drawGauge(r, fluxMode) {
   const svg = $('gauge'); svg.innerHTML = '';
   const cx = 125, cy = 128, R1 = 96, R2 = 78;
   const a0 = -Math.PI, a1 = 0;             // semicircle
-  const lo = -2, hi = 1;                    // log10(ratio) range
+  const lo = -5, hi = 1;                    // log10(ratio) range
   const toAng = v => a0 + (Math.min(Math.max(Math.log10(v), lo), hi) - lo)
                         / (hi - lo) * (a1 - a0);
   const arc = (s, e, rad1, rad2) => {
@@ -415,14 +428,14 @@ function drawGauge(r, fluxMode) {
            `L${x3},${y3}A${rad2},${rad2} 0 ${lg} 0 ${x4},${y4}Z`;
   };
   // bands: flushing <0.3, marginal 0.3–1, trapping >1
-  el('path', { d: arc(toAng(0.01), toAng(0.3), R1, R2),
+  el('path', { d: arc(toAng(1e-5), toAng(0.3), R1, R2),
                fill: css('--blue-250'), opacity: 0.55 }, svg);
   el('path', { d: arc(toAng(0.3), toAng(1.0), R1, R2),
                fill: css('--warn'), opacity: 0.55 }, svg);
   el('path', { d: arc(toAng(1.0), toAng(10), R1, R2),
                fill: css('--crit'), opacity: 0.55 }, svg);
   // ticks + labels
-  for (const [v, lab] of [[0.01,'0.01'],[0.1,'0.1'],[0.3,'0.3'],[1,'1'],[10,'10']]) {
+  for (const [v, lab] of [[1e-5,'10⁻⁵'],[1e-3,'10⁻³'],[0.3,'0.3'],[1,'1'],[10,'10']]) {
     const a = toAng(v);
     const x1 = cx + (R1 + 2) * Math.cos(a), y1 = cy + (R1 + 2) * Math.sin(a);
     const x2 = cx + (R1 + 7) * Math.cos(a), y2 = cy + (R1 + 7) * Math.sin(a);
@@ -434,7 +447,7 @@ function drawGauge(r, fluxMode) {
                  fill: css('--muted') }, svg).textContent = lab;
   }
   // needle
-  const val = fluxMode ? 0.01 : Math.min(Math.max(r.ratio, 0.01), 10);
+  const val = fluxMode ? 1e-5 : Math.min(Math.max(r.ratio, 1e-5), 10);
   const a = toAng(val);
   el('line', { x1: cx, y1: cy,
                x2: cx + (R2 - 6) * Math.cos(a), y2: cy + (R2 - 6) * Math.sin(a),
@@ -602,7 +615,7 @@ function drawXsec(r, v) {
 
 /* ─────────── regime diagram ─────────── */
 const CH = { L: 64, R: 20, T: 18, B: 46, W: 760, H: 440 };
-const PE_MIN = 0.5, PE_MAX = 300, EPS_MIN = 0.01, EPS_MAX = 500;
+const PE_MIN = 0.5, PE_MAX = 300, EPS_MIN = 1e-4, EPS_MAX = 500;
 const xOf = pe => CH.L + (Math.log10(pe) - Math.log10(PE_MIN)) /
     (Math.log10(PE_MAX) - Math.log10(PE_MIN)) * (CH.W - CH.L - CH.R);
 const yOf = e => CH.H - CH.B - (Math.log10(e) - Math.log10(EPS_MIN)) /
@@ -614,7 +627,7 @@ function drawChart(r, v) {
   for (let i = 0; i <= 180; i++) {
     const pe = Math.pow(10, Math.log10(PE_MIN) +
         i / 180 * (Math.log10(PE_MAX) - Math.log10(PE_MIN)));
-    const es = 2 * (lambda1(pe) + r.Da) / (r.zeta * (1 + 0.12 * v.a0));
+    const es = 2 * (lambda1(pe) + r.Da + r.alpha0 * r.zeta * pe / 4) / r.zeta;
     pts.push([xOf(pe), yOf(Math.min(Math.max(es, EPS_MIN), EPS_MAX))]);
   }
   const path = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' +
@@ -634,7 +647,7 @@ function drawChart(r, v) {
                  fill: css('--muted'), 'font-size': 11.5 }, svg)
       .textContent = vv;
   });
-  [0.01, 0.1, 1, 10, 100].forEach(vv => {
+  [1e-4, 1e-2, 1, 100].forEach(vv => {
     const y = yOf(vv);
     el('line', { x1: CH.L, y1: y, x2: CH.W - CH.R, y2: y,
                  stroke: css('--grid'), 'stroke-width': 1 }, svg);
@@ -666,7 +679,7 @@ function drawChart(r, v) {
   el('path', { d: path, fill: 'none', stroke: css('--blue'),
                'stroke-width': 2.4, 'clip-path': 'url(#pc)' }, svg);
   const peM = 2 * Math.PI;
-  const esM = 2 * (lambda1(peM) + r.Da) / (r.zeta * (1 + 0.12 * v.a0));
+  const esM = 2 * (lambda1(peM) + r.Da + r.alpha0 * r.zeta * peM / 4) / r.zeta;
   if (esM > EPS_MIN && esM < EPS_MAX) {
     el('circle', { cx: xOf(peM), cy: yOf(esM), r: 4.5,
                    fill: css('--blue-strong') }, svg);
@@ -736,7 +749,7 @@ function drawChart(r, v) {
         (CH.W - CH.L - CH.R) * (Math.log10(PE_MAX) - Math.log10(PE_MIN)));
     const ee = Math.pow(10, Math.log10(EPS_MIN) + (CH.H - CH.B - my) /
         (CH.H - CH.T - CH.B) * (Math.log10(EPS_MAX) - Math.log10(EPS_MIN)));
-    const es = 2 * (lambda1(pe) + r.Da) / (r.zeta * (1 + 0.12 * v.a0));
+    const es = 2 * (lambda1(pe) + r.Da + r.alpha0 * r.zeta * pe / 4) / r.zeta;
     tip.style.display = 'block';
     tip.style.left = (ev.clientX - box.left + 14) + 'px';
     tip.style.top = (ev.clientY - box.top - 10) + 'px';
@@ -771,8 +784,8 @@ function update() {
   } else if (r.ratio < 0.3) {
     cls = 'good'; icon = '✓'; title = 'Flushing regime';
     sub = 'ε sits well below the critical rate ε*: natural attenuation should ' +
-      'continue under sea-level rise, and aquifer-average cleanup even ' +
-      'accelerates slightly. Expect the persistent zone to shift toward the ' +
+      'continue under sea-level rise, slowing only at the pace of the ' +
+      'declining head. Expect the persistent zone to shift toward the ' +
       'shoreline as the wedge advances.';
     steps = [
       '<b>Keep one sentinel well in the trapping zone</b> (upper seaward corner, ξ ≈ 0.9–1) — it is the only place the SLR signal is visible.',
@@ -806,13 +819,16 @@ function update() {
 
   // tiles
   $('tiles').innerHTML = [
-    ['Péclet number Pe', fmt(r.Pe), 'L/ℓ  [-]'],
-    ['SLR rate ε' + (v.R > 1 ? '·R' : ''), flux ? '≈ 0' : fmt(r.epsEff),
-     flux ? 'head-controlled value: ' + fmt(r.epsHead) : 'dimensionless  [-]'],
+    ['Péclet · wedge state', fmt(r.Pe) + ' · α₀=' + fmt(r.alpha0),
+     'Pe = L/ℓ;  α₀ = δL/Δh₀  [-]'],
+    ['SLR rate ε = α₀·ε_f' + (v.R > 1 ? ' ·R' : ''),
+     flux ? '≈ 0' : fmt(r.epsEff),
+     flux ? 'head-controlled value: ' + fmt(r.epsHead)
+          : 'ε_f = ' + fmt(r.epsF) + '  [-]'],
     ['Critical rate ε*', fmt(r.epsStar),
-     r.Da > 0 ? 'incl. decay Da = ' + fmt(r.Da) : 'conservative bound  [-]'],
+     'incl. α₀' + (r.Da > 0 ? ' and Da = ' + fmt(r.Da) : '') + '  [-]'],
     ['Flushing time', fmtYears(r.TflushYr),
-     'T₀ · L/ū' + (v.R > 1 ? ' · R' : '')],
+     'T₀ · L/ū' + (v.R > 1 ? ' · R' : '') + ' (reference head)'],
   ].map(([k, val, s]) =>
     `<div class="tile"><div class="k">${k}</div><div class="v">${val}</div>` +
     `<div class="s">${s}</div></div>`).join('');
@@ -822,19 +838,17 @@ function update() {
   const okf = (ok, warnTxt, okTxt) =>
     flags.push({ cls: ok ? 'ok' : 'warn', txt: ok ? okTxt : warnTxt });
   okf(r.qs <= 0.5,
-    `Quasi-static assumption strained: α changes by ${fmt(r.qs)} per flushing time (want ≲ 0.5) — read the verdict as a trend, and see a numerical model.`,
-    `Quasi-static assumption OK (ε·T₀ = ${fmt(r.qs)} ≤ 0.5).`);
+    `Quasi-static assumption strained: fractional head loss ε_f·T₀ = ${fmt(r.qs)} per flushing time (want ≲ 0.5) — read the verdict as a trend, and see a numerical model.`,
+    `Quasi-static assumption OK (ε_f·T₀ = ${fmt(r.qs)} ≤ 0.5).`);
   okf(r.alphaAtT0 <= 1.0,
     r.alphaAtT0 <= 1.8
-      ? `Between measured accuracy ceilings: α(T₀) = ${fmt(r.alphaAtT0)} — local predictions good to ~15% (5% requires α ≤ 1.0).`
-      : `Beyond the measured 15% ceiling: α(T₀) = ${fmt(r.alphaAtT0)} > 1.8 — first-order theory is a trend indicator here.`,
-    `Within the measured 5% accuracy envelope (α(T₀) = ${fmt(r.alphaAtT0)} ≤ 1.0, benchmarked vs nonlinear simulation).`);
+      ? `Between measured accuracy ceilings: α₀ + ε·T₀ = ${fmt(r.alphaAtT0)} — predictions good to ~15% (5% requires ≤ 1.0).`
+      : `Beyond the measured 15% ceiling: α₀ + ε·T₀ = ${fmt(r.alphaAtT0)} > 1.8 — the expansion about α = 0 does not cover this wedge state; first-order theory is a trend indicator only.`,
+    `Within the measured 5% accuracy envelope (α₀ + ε·T₀ = ${fmt(r.alphaAtT0)} ≤ 1.0, benchmarked vs nonlinear simulation).`);
   okf(r.Pe >= 1 && r.Pe <= 200,
     `Pe = ${fmt(r.Pe)} lies outside the explored range (1–200).`,
     `Pe within the explored range (1–200).`);
-  if (r.alphaPhys > 1.8 && v.a0 === 0)
-    flags.push({ cls: 'warn', txt:
-      `Note: the full physical coupling δL/Δh₀ = ${fmt(r.alphaPhys)} is large; the screening treats SLR as an increment about today's wedge (α₀ = 0 reference), as in the paper.` });
+
   $('flags').innerHTML = flags.map(f =>
     `<div class="flag ${f.cls}"><span class="dot">${f.cls === 'ok' ? '●' : '▲'}</span><span>${f.txt}</span></div>`).join('');
 
@@ -844,7 +858,7 @@ function update() {
 }
 
 /* wiring */
-for (const id of ['K','L','d','dh','om','disp','slr','R','thalf','delta','a0'])
+for (const id of ['K','L','d','dh','om','disp','slr','R','thalf','delta'])
   $(id).addEventListener('input', update);
 function setBC(bc) {
   state.bc = bc;

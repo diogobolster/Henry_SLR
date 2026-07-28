@@ -1,0 +1,26 @@
+{
+  "title": "Henry_SLR: code, data, and interactive screening tool for contaminant fate in coastal aquifers under sea level rise",
+  "description": "Full nonlinear variable-density Henry-problem solver, benchmark scripts, result data, figure-generation code, and a self-contained interactive screening calculator accompanying Farhat & Bolster, 'Contaminant fate in coastal aquifers under sea level rise: analytical solutions for a quasi-static saltwater wedge' (Journal of Contaminant Hydrology).",
+  "creators": [
+    {
+      "name": "Farhat, Saif",
+      "affiliation": "Civil & Environmental Engineering & Earth Sciences, University of Notre Dame"
+    },
+    {
+      "name": "Bolster, Diogo",
+      "affiliation": "Civil & Environmental Engineering & Earth Sciences, University of Notre Dame"
+    }
+  ],
+  "license": "MIT",
+  "upload_type": "software",
+  "access_right": "open",
+  "keywords": [
+    "seawater intrusion",
+    "sea level rise",
+    "coastal aquifer",
+    "contaminant transport",
+    "Henry problem",
+    "natural attenuation",
+    "screening tool"
+  ]
+}

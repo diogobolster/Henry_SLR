@@ -3,13 +3,16 @@
 Five steps take this folder to a citable archive. Delete this file (or keep
 it — it's harmless) once done.
 
-## 1. Create the GitHub repository and push
+## 1. Create the GitHub repository and push — DONE
+(live at https://github.com/diogobolster/Henry_SLR)
 
-On github.com: **New repository** → name `slr-contaminant-screening`
+### Original instructions (kept for reference)
+
+On github.com: **New repository** → name `Henry_SLR`
 (public, no README — this folder already has one). Then, from this folder:
 
 ```bash
-git remote add origin git@github.com:<YOUR-USERNAME>/slr-contaminant-screening.git
+git remote add origin git@github.com:diogobolster/Henry_SLR.git
 git push -u origin main
 ```
 
@@ -22,16 +25,16 @@ Repo → **Settings → Pages** → Source: *Deploy from a branch* →
 Branch: `main`, folder: `/docs` → Save. After ~1 minute the tool is live at
 
 ```
-https://<YOUR-USERNAME>.github.io/slr-contaminant-screening/
+https://diogobolster.github.io/Henry_SLR/
 ```
 
-Paste that URL into the README where the Pages link placeholder is.
+The README already links this URL.
 
 ## 3. Mint a DOI (Zenodo)
 
 1. Log in at zenodo.org with your GitHub account.
 2. **GitHub** (under your account menu) → flip the toggle next to
-   `slr-contaminant-screening`.
+   `Henry_SLR`.
 3. Back on GitHub: **Releases → Create a new release** → tag `v1.0.0`,
    title "v1.0.0 — JCH revision submission" → Publish.
 4. Zenodo automatically archives the release and mints two DOIs: a
@@ -48,10 +51,10 @@ two URLs/DOI):
 > **Software and data availability.** The full nonlinear Henry solver, all
 > benchmark scripts and data, the figure-generation code, and the
 > interactive screening calculator are openly available at
-> https://github.com/YOUR-USERNAME/slr-contaminant-screening and archived
+> https://github.com/diogobolster/Henry_SLR and archived
 > at https://doi.org/10.5281/zenodo.XXXXXXX. The screening calculator can
 > be used directly in a browser at
-> https://YOUR-USERNAME.github.io/slr-contaminant-screening/.
+> https://diogobolster.github.io/Henry_SLR/.
 
 The same URLs go in the response letter where the supplementary calculator
 is mentioned.
