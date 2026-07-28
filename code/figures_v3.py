@@ -37,7 +37,7 @@ ax.set_ylabel(r'$\Gamma(\xi,\eta)$ [-]')
 ax.set_title('Local histories across the seaward trapping zone, '
              r'$\mathrm{Pe}=10$' '\n'
              r'solid: coupling forcing $\varepsilon=3$; dashed: static '
-             r'reference; labels: retardation at $\tau=T_0$')
+             r'reference; labels: coupling-induced retardation at $\tau=T_0$')
 ax.legend(loc='upper right', framealpha=0.92, title='monitoring point')
 ax.set_xlim(0, 1.6)
 plt.tight_layout()
@@ -86,10 +86,10 @@ for a0, col, ls in zip([0.0, 1.0, 1.8], ['#2166ac', '#f4a582', '#d6604d'],
 e0 = np.array([eps_star(p, 0.0) for p in Pe_arr])
 ax.fill_between(Pe_arr, 1e-4, e0, alpha=0.10, color='#2166ac')
 ax.fill_between(Pe_arr, e0, 1e3, alpha=0.10, color='#d6604d')
-ax.text(0.72, 0.16, 'FLUSHING', transform=ax.transAxes, fontsize=13,
+ax.text(0.70, 0.16, 'FLUSHING-DOMINATED', transform=ax.transAxes, fontsize=11.5,
         color='#2166ac', alpha=0.85, ha='center', style='italic',
         fontweight='bold')
-ax.text(0.22, 0.83, 'TRAPPING', transform=ax.transAxes, fontsize=13,
+ax.text(0.24, 0.83, 'TRAPPING CONCERN', transform=ax.transAxes, fontsize=11.5,
         color='#d6604d', alpha=0.85, ha='center', style='italic',
         fontweight='bold')
 ax.axvspan(10, 100, alpha=0.07, color='grey')
@@ -106,7 +106,7 @@ ax.set_xlabel(r"P\'eclet number $\mathrm{Pe}$ [-]")
 ax.set_ylabel(r'Absolute SLR coupling rate $\varepsilon=\alpha_0\varepsilon_f$ [-]')
 ax.set_xlim(Pe_arr[0], Pe_arr[-1]); ax.set_ylim(1e-4, 1e3)
 ax.legend(loc='lower right', framealpha=0.92, fontsize=9)
-ax.set_title(r'Regime diagram: screening boundary '
+ax.set_title(r'Screening regime diagram: '
              r'$\varepsilon^*(\mathrm{Pe},\alpha_0)$')
 plt.tight_layout()
 for ext in ('png', 'pdf'):

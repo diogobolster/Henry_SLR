@@ -76,8 +76,8 @@ ax.axhline(ZETA**2 / 2, color=C_TH, lw=1.4, ls='--',
 ax.set_ylim(0.0, 0.25)
 ax.set_xlabel(r'$\xi$ [-]')
 ax.set_ylabel(r'$\int_0^\zeta U_1\, d\eta$  [-]')
-ax.set_title('(c) Key ingredient of $\\mu_1=0$:\n'
-             r'$\eta$-integral of $U_1$ is constant in $\xi$')
+ax.set_title('(c) Depth-integrated $U_1$ is constant in $\\xi$\n'
+             r'(basis of $\mu_1=\zeta\mathrm{Pe}/4$)')
 ax.legend(loc='lower center', framealpha=0.9)
 ax.set_xlim(0, 1)
 plt.tight_layout()

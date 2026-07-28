@@ -130,8 +130,8 @@ ax_a.text(0.06, np.exp(-1) * 1.12, r'$e^{-1}$', fontsize=9, color='grey')
 ax_a.set_xlim(0, 3.0); ax_a.set_ylim(2e-2, 1.4)
 ax_a.set_xlabel(r'$\tau/T_0$ [-]')
 ax_a.set_ylabel(r'$\langle\Gamma\rangle/\langle\Gamma\rangle_0$ [-]')
-ax_a.set_title('(a) Domain-averaged flushing: SLR $\\varepsilon=1$ (solid)\n'
-               'vs static (dashed); SLR accelerates decay ($\\mu_1>0$)')
+ax_a.set_title('(a) Growing-coupling response at fixed hydraulic forcing\n'
+               '(stretched clock): $\\varepsilon=1$ (solid) vs static (dashed)')
 ax_a.legend(loc='lower left', framealpha=0.9)
 
 eps_v = [0, 1, 3, 6]
@@ -235,8 +235,9 @@ ax_a.axhline(0, color='grey', lw=0.6)
 ax_a.set_xlabel(r'$\tau/T_0$ [-]')
 ax_a.set_ylabel(r'global deviation $\varepsilon\tau\langle\Gamma_1\rangle/'
                 r'\langle\Gamma_0\rangle$ [%]')
-ax_a.set_title('(a) Domain-averaged SLR effect, $\\varepsilon=1$\n'
-               '(negative: SLR accelerates global flushing)')
+ax_a.set_title('(a) Domain-averaged coupling effect, $\\varepsilon=1$\n'
+               '(negative: stronger coupling accelerates flushing,\n'
+               'stretched clock)')
 ax_a.legend(framealpha=0.9)
 for e, col in zip([1, 3, 6], ['#74add1', '#f46d43', '#d73027']):
     dev = e * taus10 * loc1 / np.clip(loc0, 1e-12, None)
@@ -246,7 +247,7 @@ ax_b.axhline(0, color='grey', lw=0.6)
 ax_b.set_xlabel(r'$\tau/T_0$ [-]')
 ax_b.set_ylabel(r'local deviation $\varepsilon\tau\,\Gamma_1/\Gamma_0$ [%]')
 ax_b.set_title('(b) Seaward trapping zone, $\\mathrm{Pe}=10$\n'
-               '(positive: SLR retards local cleanup)')
+               '(positive: coupling retards local cleanup)')
 ax_b.legend(framealpha=0.9)
 plt.tight_layout()
 for ext in ('png', 'pdf'):

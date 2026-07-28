@@ -277,7 +277,7 @@
       <h2>4 · Where your site sits</h2>
       <div style="position:relative;">
         <svg id="chart" viewBox="0 0 760 440" role="img"
-             aria-label="Log-log regime diagram of dimensionless sea-level-rise rate versus Peclet number with the critical boundary and your site marked"></svg>
+             aria-label="Log-log regime diagram of dimensionless sea-level-rise rate versus Peclet number with the screening-threshold curve and your site marked"></svg>
         <div class="tooltip" id="tip"></div>
       </div>
       <div class="legend">
@@ -671,11 +671,11 @@ function drawChart(r, v) {
   el('text', { x: xOf(60), y: yOf(0.08), fill: css('--flush-ink'),
                'font-size': 14, 'font-style': 'italic', 'font-weight': 700,
                'text-anchor': 'middle', opacity: 0.9 }, svg)
-    .textContent = 'FLUSHING';
+    .textContent = 'FLUSHING-DOMINATED';
   el('text', { x: xOf(1.6), y: yOf(120), fill: css('--trap-ink'),
                'font-size': 14, 'font-style': 'italic', 'font-weight': 700,
                'text-anchor': 'middle', opacity: 0.9 }, svg)
-    .textContent = 'TRAPPING';
+    .textContent = 'TRAPPING CONCERN';
   el('path', { d: path, fill: 'none', stroke: css('--blue'),
                'stroke-width': 2.4, 'clip-path': 'url(#pc)' }, svg);
   const peM = 2 * Math.PI;
@@ -783,7 +783,7 @@ function update() {
       '<b>Re-screen if pumping changes.</b> New extraction can convert the system toward head-controlled behaviour.'];
   } else if (r.ratio < 0.3) {
     cls = 'good'; icon = '✓'; title = 'Flushing regime';
-    sub = 'ε sits well below the critical rate ε*: natural attenuation should ' +
+    sub = 'ε sits well below the screening threshold ε*: natural attenuation should ' +
       'continue under sea-level rise, slowing only at the pace of the ' +
       'declining head. Expect the persistent zone to shift toward the ' +
       'shoreline as the wedge advances.';
@@ -825,7 +825,7 @@ function update() {
      flux ? '≈ 0' : fmt(r.epsEff),
      flux ? 'head-controlled value: ' + fmt(r.epsHead)
           : 'ε_f = ' + fmt(r.epsF) + '  [-]'],
-    ['Critical rate ε*', fmt(r.epsStar),
+    ['Screening threshold ε*', fmt(r.epsStar),
      'incl. α₀' + (r.Da > 0 ? ' and Da = ' + fmt(r.Da) : '') + '  [-]'],
     ['Flushing time', fmtYears(r.TflushYr),
      'T₀ · L/ū' + (v.R > 1 ? ' · R' : '') + ' (reference head)'],
