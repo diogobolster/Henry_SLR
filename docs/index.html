@@ -869,7 +869,7 @@ function setBC(bc) {
   $('bcFlux').setAttribute('aria-pressed', bc === 'flux');
   $('bcHint').textContent = bc === 'head'
     ? 'Inland head fixed by topography, drains or management — the vulnerable case. Sea rise shrinks the driving head.'
-    : 'Inland flux fixed by recharge — the water table floats up with the sea; the wedge barely moves (Chang et al., 2011).';
+    : 'Inland flux fixed by recharge — the inland (piezometric) head rises with the sea; the wedge barely moves (Chang et al., 2011).';
   update();
 }
 $('bcHead').addEventListener('click', () => setBC('head'));
